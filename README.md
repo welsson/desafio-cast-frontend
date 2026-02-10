@@ -46,8 +46,7 @@
 4. **Acesse no navegador:**
 
    🔗 http://localhost:4200
-
-3.  
+ 
 ## ⚙️ Integração com o Backend:
 
  Integração com o Backend   
