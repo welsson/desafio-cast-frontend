@@ -1,59 +1,59 @@
-# DesafioCast
+# 🎨 Desafio CAST - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+> Interface moderna desenvolvida com **Angular 19+**, focada em componentes standalone, performance reativa com Signals e uma experiência de usuário.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🛠️ Tecnologias e Ferramentas
 
-```bash
-ng serve
-```
+* **Angular 19 (Standalone)** - Arquitetura moderna sem NgModules, mais leve e performática.
+* **Angular Material** - Biblioteca de componentes de UI de alta qualidade.
+* **TypeScript** - Tipagem forte para um código mais seguro.
+* **SASS (SCSS)** - Estilização avançada e modular.
+* **Signals** - Gerenciamento de estado reativo nativo do Angular.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🌟 Diferenciais Técnicos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+* **Arquitetura Standalone:** Todo o projeto foi construído sem o uso de `AppModule`, utilizando o novo padrão de inicialização e injeção de dependências.
+* **Responsividade:** Layout adaptável para diferentes tamanhos de tela utilizando Flexbox/Grid.
+* **Consumo de API:** Service unificado para comunicação com o backend Spring Boot, utilizando o `HttpClient` com as novas APIs de configuração.
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 📖 Como rodar o projeto localmente
 
-```bash
-ng generate --help
-```
+### Pré-requisitos
+* Node.js (versão LTS recomendada)
+* Angular CLI instalado (`npm install -g @angular/cli`)
 
-## Building
+### Passo a Passo
 
-To build the project run:
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/welsson/desafio-cast-frontend.git](https://github.com/welsson/desafio-cast-frontend.git)
+   cd desafio-cast
 
-```bash
-ng build
-```
+2. **Instale as dependências:**
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+   npm install
+   
+3. **Inicie o servidor de desenvolvimento:**
 
-## Running unit tests
+   ng serve
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+4. **Acesse no navegador:**
 
-```bash
-ng test
-```
+   🔗 http://localhost:4200
 
-## Running end-to-end tests
+3.  
+## ⚙️ Integração com o Backend:
 
-For end-to-end (e2e) testing, run:
+ Integração com o Backend   
 
-```bash
-ng e2e
-```
+ O frontend consome uma API REST desenvolvida em Spring Boot. 
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+* **URL Base da API:** `http://localhost:8520/v1`
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+> **Nota:** Para o funcionamento correto das operações de saque e listagem, certifique-se de que o backend está ativo antes de iniciar o frontend.
