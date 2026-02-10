@@ -32,7 +32,7 @@
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/welsson/desafio-cast-frontend.git](https://github.com/welsson/desafio-cast-frontend.git)
+   git clone https://github.com/welsson/desafio-cast-frontend.git
    cd desafio-cast
 
 2. **Instale as dependências:**
@@ -56,4 +56,4 @@
 
 * **URL Base da API:** `http://localhost:8520/v1`
 
-> **Nota:** Para o funcionamento correto das operações de saque e listagem, certifique-se de que o backend está ativo antes de iniciar o frontend.
+> **Nota:** Para o funcionamento correto das operações, certifique-se de que o backend está ativo antes de iniciar o frontend.
