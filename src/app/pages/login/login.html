@@ -1,0 +1,26 @@
+<div class="login-wrapper">
+  <mat-card class="login-card" appearance="outlined">
+    <mat-card-header>
+      <div class="logo-box">
+        <mat-icon color="primary">account_balance</mat-icon>
+        <h1></h1>
+      </div>
+      <mat-card-subtitle>Acesse sua plataforma</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="outline" floatLabel="always" class="full-width">
+        <mat-label>Matrícula ou ID da Conta</mat-label>
+        <input matInput
+               [(ngModel)]="matricula"
+               (keyup.enter)="entrar()"
+               placeholder="Ex: admin ou 105">
+        <mat-icon matSuffix>badge</mat-icon>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="full-width" (click)="entrar()">
+        ACESSAR SISTEMA
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

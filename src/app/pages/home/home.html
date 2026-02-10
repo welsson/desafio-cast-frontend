@@ -1,0 +1,31 @@
+<div class="home-container">
+  <div class="welcome-header">
+    <mat-icon class="main-logo">account_balance</mat-icon>
+    <h1>Desafio Cast <small>v1.0</small></h1>
+    <p>Selecione o perfil de acesso para continuar</p>
+  </div>
+
+  <div class="selection-grid">
+    <mat-card class="profile-card admin" matRipple (click)="navegar('admin')">
+      <div class="card-content">
+        <div class="icon-circle">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <h2>Administrador</h2>
+        <p>Gestão de contas, aberturas de cadastro e monitoramento do sistema.</p>
+        <span class="action-label">ACESSAR GERÊNCIA <mat-icon>chevron_right</mat-icon></span>
+      </div>
+    </mat-card>
+
+    <mat-card class="profile-card user" matRipple (click)="navegar('usuario')">
+      <div class="card-content">
+        <div class="icon-circle">
+          <mat-icon>person</mat-icon>
+        </div>
+        <h2>Cliente</h2>
+        <p>Realizar créditos, saques, transferências e consulta de extrato.</p>
+        <span class="action-label">MINHA CONTA <mat-icon>chevron_right</mat-icon></span>
+      </div>
+    </mat-card>
+  </div>
+</div>
