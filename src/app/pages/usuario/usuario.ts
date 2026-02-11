@@ -80,7 +80,7 @@ export class Usuario {
         this.snackBar.open(`Bem-vindo, ${res.titular}!`, 'Sucesso', this.snConfig);
       },
       error: (err) => {
-        const msg = err.error?.message || 'CPF não encontrado no Cast Bank.';
+        const msg = err.error?.message || 'CPF não encontrado.';
         this.snackBar.open(msg, 'Erro', this.snConfig);
         this.contaAtiva.set(null);
       },
@@ -122,7 +122,7 @@ export class Usuario {
         next: (res) => {
           if (res.id === this.contaAtiva()?.id) {
             this.contaDestinoEncontrada.set(null);
-            this.mensagemErroFavorecido.set('Você não pode transferir para si mesmo.');
+            this.mensagemErroFavorecido.set('Você não pode transferir para o mesmo cpf.');
           } else {
             this.contaDestinoEncontrada.set(res);
             this.mensagemErroFavorecido.set(null);

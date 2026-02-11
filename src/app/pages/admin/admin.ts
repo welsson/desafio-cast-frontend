@@ -96,7 +96,7 @@ mudarPagina(event: PageEvent) {
         this.listarContas();
       },
       error: (err) => {
-        this.snackBar.open(err.error?.message || 'Erro ao criar conta', 'Entendido');
+        this.snackBar.open(err.error?.message || 'Erro ao criar conta', 'Fechar');
       }
     });
   }
