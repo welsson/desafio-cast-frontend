@@ -1,13 +1,13 @@
 {
   "name": "desafio-cast",
   "version": "0.0.0",
-"scripts": {
-  "ng": "ng",
-  "start": "ng serve",
-  "build": "ng build --base-href /cast/",
-  "watch": "ng build --watch --configuration development",
-  "test": "ng test"
-},
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --base-href /cast/",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
   "prettier": {
     "overrides": [
       {
@@ -20,6 +20,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^20.3.16",
     "@angular/cdk": "^20.2.14",
     "@angular/common": "^20.1.0",
     "@angular/compiler": "^20.1.0",
