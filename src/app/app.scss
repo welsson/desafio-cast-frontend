@@ -1,11 +1,11 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; // Garante que a aplicação ocupe a tela toda
+  min-height: 100vh;
 }
 
 .main-content {
-  flex: 1; // Faz o conteúdo principal "empurrar" o footer para baixo
+  flex: 1;
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -22,7 +22,6 @@
   border-top: 1px solid #ddd;
 }
 
-// Ajuste responsivo para telas pequenas
 @media (max-width: 600px) {
   .main-content {
     padding: 1rem;

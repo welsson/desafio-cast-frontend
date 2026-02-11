@@ -10,5 +10,5 @@ import { Navbar } from './components/navbar/navbar';
   styleUrl: './app.scss'
 })
 export class App {
-  title = 'sistema-bancario';
+  title = 'desafio-cast';
 }

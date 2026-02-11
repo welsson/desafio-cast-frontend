@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { ContaService } from '../../services/conta';
+import { ContaService } from '../../services/conta.service';
 import { ContaDTO, PageResponseDTO } from '../../models/conta.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { CpfPipe } from '../../shared/cpf.pipe';
@@ -17,7 +17,7 @@ import { CpfPipe } from '../../shared/cpf.pipe';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, // Removido FormsModule pois usaremos apenas Reactive
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatPaginatorModule,
@@ -31,24 +31,20 @@ import { CpfPipe } from '../../shared/cpf.pipe';
   styleUrl: './admin.scss',
 })
 export class Admin implements OnInit {
-  // --- Injeção Moderna ---
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ContaService);
   private readonly snackBar = inject(MatSnackBar);
 
-  // Adicione signals para controlar a paginação
   totalElements = signal(0);
   pageSize = signal(10);
   paginaAtual = signal(0);
 
   @ViewChild(FormGroupDirective) formDirective!: FormGroupDirective;
 
-  // --- Estado com Signals (O padrão atual) ---
   carregando = signal<boolean>(false);
 
   displayedColumns: string[] = ['id', 'numero', 'titular', 'cpf', 'saldo'];
 
-  // --- Formulário Tipado ---
   protected readonly formConta = this.fb.group({
     titular: ['', [Validators.required, Validators.minLength(3)]],
     cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]]
@@ -58,33 +54,30 @@ export class Admin implements OnInit {
     this.listarContas();
   }
 
-// Inicialize o signal como um array vazio para evitar erros de renderização inicial
   contas = signal<ContaDTO[]>([]);
 
-
   listarContas(): void {
-    this.carregando.set(true);
-    this.service.getTodasAsContas().subscribe({
-      next: (res: PageResponseDTO<ContaDTO>) => {
-        // MUITO IMPORTANTE: Garanta que res.content existe
-        if (res && res.content) {
-          this.contas.set(res.content);
-          this.totalElements.set(res.totalElements);
-        }
-      },
-      error: (err) => {
-        console.error('Erro no back:', err);
-        this.snackBar.open('Erro ao carregar lista', 'Fechar');
-      },
-      complete: () => this.carregando.set(false)
-    });
-  }
-  // Função para mudar de página
-  mudarPagina(event: PageEvent) {
-    this.paginaAtual.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
-    this.listarContas();
-  }
+  this.carregando.set(true);
+
+  this.service.getTodasAsContas(this.paginaAtual(), this.pageSize()).subscribe({
+    next: (res: PageResponseDTO<ContaDTO>) => {
+      if (res && res.content) {
+        this.contas.set(res.content);
+        this.totalElements.set(res.totalElements);
+      }
+    },
+    error: (err) => {
+      this.snackBar.open(err.error?.message || 'Erro ao carregar lista', 'Fechar');
+    },
+    complete: () => this.carregando.set(false)
+  });
+}
+
+mudarPagina(event: PageEvent) {
+  this.paginaAtual.set(event.pageIndex);
+  this.pageSize.set(event.pageSize);
+  this.listarContas();
+}
 
  criarConta(): void {
     if (this.formConta.invalid) return;
@@ -95,10 +88,7 @@ export class Admin implements OnInit {
       next: (res: ContaDTO) => {
         this.snackBar.open(`Conta criada com sucesso!`, 'Fechar', { duration: 5000 });
 
-        // --- O SEGREDO ESTÁ AQUI ---
-        // Primeiro resetamos os valores
         this.formConta.reset();
-        // Depois resetamos o estado do formulário no Material (remove o vermelho)
         if (this.formDirective) {
           this.formDirective.resetForm();
         }

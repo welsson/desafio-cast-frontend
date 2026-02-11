@@ -9,11 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { ContaService } from '../../services/conta';
+import { MatSnackBar, MatSnackBarModule, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+
+import { ContaService } from '../../services/conta.service';
 import { ContaDTO } from '../../models/conta.model';
 import { CurrencyMaskDirective } from '../../shared/directives/currency-mask';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-usuario',
@@ -40,8 +41,12 @@ export class Usuario {
   private readonly service = inject(ContaService);
   private readonly snackBar = inject(MatSnackBar);
 
+  private readonly snConfig: MatSnackBarConfig = {
+    duration: 4000,
+    verticalPosition: 'top',
+    horizontalPosition: 'center'
+  };
 
-  // --- Estados do Usuário Logado ---
   cpfBusca = signal<string>('');
   contaAtiva = signal<ContaDTO | null>(null);
   saldoInicialExtrato = signal<number>(0);
@@ -50,14 +55,12 @@ export class Usuario {
   paginaAtual = signal<number>(0);
   itensPorPagina = signal<number>(5);
 
-
-  // --- Estados de Operação ---
   valorOperacao = signal<number>(0);
   cpfDestinoBusca = signal<string>('');
   contaDestinoEncontrada = signal<ContaDTO | null>(null);
   carregando = signal(false);
+  mensagemErroFavorecido = signal<string | null>(null);
 
-  // --- Estados do Extrato ---
   extrato = signal<any[]>([]);
   carregandoExtrato = signal(false);
   colunasExtrato = ['data', 'tipo', 'valor'];
@@ -65,7 +68,7 @@ export class Usuario {
   buscarPorCPF(): void {
     const cpf = this.cpfBusca().replace(/\D/g, '');
     if (cpf.length !== 11) {
-      this.snackBar.open('CPF inválido. Digite 11 números.', 'Aviso');
+      this.snackBar.open('CPF inválido. Digite 11 números.', 'Aviso', this.snConfig);
       return;
     }
 
@@ -73,68 +76,67 @@ export class Usuario {
     this.service.buscarPorCpf(cpf).subscribe({
       next: (res) => {
         this.contaAtiva.set(res);
-        this.extrato.set([]); // Limpa extrato ao trocar de conta
-        this.snackBar.open(`Bem-vindo, ${res.titular}!`, 'Sucesso', { duration: 3000 });
+        this.extrato.set([]);
+        this.snackBar.open(`Bem-vindo, ${res.titular}!`, 'Sucesso', this.snConfig);
       },
-      error: () => {
-        this.snackBar.open('CPF não encontrado no Cast Bank.', 'Erro');
+      error: (err) => {
+        const msg = err.error?.message || 'CPF não encontrado no Cast Bank.';
+        this.snackBar.open(msg, 'Erro', this.snConfig);
         this.contaAtiva.set(null);
       },
       complete: () => this.carregando.set(false)
     });
   }
 
-  /**
-   * Busca o extrato manualmente por clique no botão
-   */
-/**
-   * Ajuste no método emitirExtrato para aceitar a página
-   */
- mudarPagina(event: PageEvent): void {
-  // Primeiro atualizamos os estados
-  this.itensPorPagina.set(event.pageSize);
-  this.paginaAtual.set(event.pageIndex);
+  mudarPagina(event: PageEvent): void {
+    this.itensPorPagina.set(event.pageSize);
+    this.paginaAtual.set(event.pageIndex);
+    this.emitirExtrato(event.pageIndex);
+  }
 
-  // Depois chamamos a busca passando o novo index
-  this.emitirExtrato(event.pageIndex);
-}
+  emitirExtrato(pagina: number = this.paginaAtual()): void {
+    const id = this.contaAtiva()?.id;
+    if (!id) return;
 
-emitirExtrato(pagina: number = this.paginaAtual()): void {
-  const id = this.contaAtiva()?.id;
-  if (!id) return;
+    this.carregandoExtrato.set(true);
+    this.paginaAtual.set(pagina);
 
-  this.carregandoExtrato.set(true);
-  // Não resete para 0 aqui a menos que o usuário clique no botão "Emitir Extrato" manualmente
-  this.paginaAtual.set(pagina);
-
-  this.service.buscarExtrato(id, pagina, this.itensPorPagina()).subscribe({
-    next: (res: any) => {
-      this.extrato.set(res.transacoes.content);
-      this.totalElementos.set(res.transacoes.totalElements);
-      this.saldoInicialExtrato.set(res.saldoInicial);
-      this.saldoFinalExtrato.set(res.saldoFinal);
-    },
-    error: (err: any) => this.tratarErro(err),
-    complete: () => this.carregandoExtrato.set(false)
-  });
-}
+    this.service.buscarExtrato(id, pagina, this.itensPorPagina()).subscribe({
+      next: (res: any) => {
+        this.extrato.set(res.transacoes.content);
+        this.totalElementos.set(res.transacoes.totalElements);
+        this.saldoInicialExtrato.set(res.saldoInicial);
+        this.saldoFinalExtrato.set(res.saldoFinal);
+      },
+      error: (err: any) => this.tratarErro(err),
+      complete: () => this.carregandoExtrato.set(false)
+    });
+  }
 
   buscarFavorecidoPorCPF(): void {
     const cpf = this.cpfDestinoBusca().replace(/\D/g, '');
+    this.mensagemErroFavorecido.set(null);
+
     if (cpf.length === 11) {
       this.service.buscarPorCpf(cpf).subscribe({
         next: (res) => {
           if (res.id === this.contaAtiva()?.id) {
             this.contaDestinoEncontrada.set(null);
-            this.snackBar.open('Você não pode transferir para si mesmo.', 'Aviso');
+            this.mensagemErroFavorecido.set('Você não pode transferir para si mesmo.');
           } else {
             this.contaDestinoEncontrada.set(res);
+            this.mensagemErroFavorecido.set(null);
           }
         },
-        error: () => this.contaDestinoEncontrada.set(null)
+        error: (err) => {
+          this.contaDestinoEncontrada.set(null);
+          const msg = err.error?.message || 'Favorecido não encontrado.';
+          this.mensagemErroFavorecido.set(msg);
+        }
       });
     } else {
       this.contaDestinoEncontrada.set(null);
+      this.mensagemErroFavorecido.set(null);
     }
   }
 
@@ -143,47 +145,48 @@ emitirExtrato(pagina: number = this.paginaAtual()): void {
     const valor = this.valorOperacao();
 
     if (!idOrigem || valor <= 0) {
-      this.snackBar.open('Informe um valor válido.', 'Aviso');
+      this.snackBar.open('Informe um valor válido.', 'Aviso', this.snConfig);
+      return;
+    }
+
+    if (tipo === 'TRANSFERENCIA' && !this.contaDestinoEncontrada()) {
+      this.snackBar.open(this.mensagemErroFavorecido() || 'Favorecido inválido.', 'Erro', this.snConfig);
       return;
     }
 
     this.carregando.set(true);
 
-    if (tipo === 'TRANSFERENCIA') {
-      const idDestino = this.contaDestinoEncontrada()?.id;
-      if (!idDestino) {
-        this.snackBar.open('Favorecido inválido.', 'Erro');
+    const operacaoObserver = {
+      next: () => {
+        const msg = tipo === 'TRANSFERENCIA' ? 'Transferência enviada!' :
+                    tipo === 'CREDITO' ? 'Depósito realizado!' : 'Saque realizado!';
+        this.snackBar.open(msg, 'Sucesso', this.snConfig);
+        this.finalizarOperacao();
         this.carregando.set(false);
-        return;
+      },
+      error: (err: any) => {
+        this.tratarErro(err);
+        this.carregando.set(false);
       }
+    };
 
-      this.service.transferir({ origemId: idOrigem, destinoId: idDestino, valor }).subscribe({
-        next: () => {
-          this.snackBar.open('Transferência enviada com sucesso!', 'Sucesso');
-          this.finalizarOperacao();
-        },
-        error: (err) => this.tratarErro(err),
-        complete: () => this.carregando.set(false)
-      });
+    if (tipo === 'TRANSFERENCIA') {
+      this.service.transferir({
+        origemId: idOrigem,
+        destinoId: this.contaDestinoEncontrada()!.id,
+        valor
+      }).subscribe(operacaoObserver);
     } else {
       const payload = { contaId: idOrigem, valor };
       const acao$ = tipo === 'CREDITO' ? this.service.depositar(payload) : this.service.sacar(payload);
-
-      acao$.subscribe({
-        next: () => {
-          this.snackBar.open(`${tipo === 'CREDITO' ? 'Depósito' : 'Saque'} realizado!`, 'Sucesso');
-          this.finalizarOperacao();
-        },
-        error: (err) => this.tratarErro(err),
-        complete: () => this.carregando.set(false)
-      });
+      acao$.subscribe(operacaoObserver);
     }
   }
 
   private finalizarOperacao(): void {
     this.atualizarSaldoAposOperacao();
     this.limparCamposOperacao();
-    this.extrato.set([]); // Reseta extrato para exigir nova emissão com dados novos
+    this.extrato.set([]);
   }
 
   private atualizarSaldoAposOperacao(): void {
@@ -200,11 +203,12 @@ emitirExtrato(pagina: number = this.paginaAtual()): void {
     this.valorOperacao.set(0);
     this.cpfDestinoBusca.set('');
     this.contaDestinoEncontrada.set(null);
+    this.mensagemErroFavorecido.set(null);
   }
 
   private tratarErro(err: any): void {
     const msg = err.error?.message || 'Erro ao processar operação.';
-    this.snackBar.open(msg, 'Entendido');
+    this.snackBar.open(msg, 'Entendido', this.snConfig);
   }
 
   sair(): void {

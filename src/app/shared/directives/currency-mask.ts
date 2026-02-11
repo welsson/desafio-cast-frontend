@@ -11,7 +11,6 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   }]
 })
 export class CurrencyMaskDirective implements ControlValueAccessor {
-  // Inicializamos com funções vazias para evitar o erro de "possibly null"
   private onChange: (value: number) => void = () => {};
   private onTouched: () => void = () => {};
 
@@ -19,21 +18,16 @@ export class CurrencyMaskDirective implements ControlValueAccessor {
 
  @HostListener('input', ['$event'])
   onInput(event: Event) {
-    // 1. Fazemos o cast do target para HTMLInputElement com segurança
     const input = event.target as HTMLInputElement;
 
     if (!input) return;
 
-    // 2. Pegamos o valor atual, removemos caracteres não numéricos
     let digits = input.value.replace(/\D/g, '');
 
-    // 3. Transformamos em decimal (centavos)
     const numberValue = (Number(digits) / 100);
 
-    // 4. Aplicamos a máscara visual no campo
     input.value = this.formatVisual(numberValue);
 
-    // 5. Notificamos o Angular (ngModel/FormControl) sobre o valor numérico puro
     if (this.onChange) {
       this.onChange(numberValue);
     }
@@ -47,7 +41,6 @@ export class CurrencyMaskDirective implements ControlValueAccessor {
   }
 
   writeValue(value: any): void {
-    // Garantimos que o valor seja numérico ou zero
     const numericValue = value || 0;
     this.el.nativeElement.value = this.formatVisual(numericValue);
   }

@@ -1,199 +1,204 @@
 <div class="container">
 
   @if (!contaAtiva()) {
-    <mat-card class="search-card" appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>Acesso do Cliente</mat-card-title>
-        <mat-card-subtitle>Informe seu CPF para acessar sua conta</mat-card-subtitle>
-      </mat-card-header>
+  <mat-card class="search-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Acesso do Cliente</mat-card-title>
+      <mat-card-subtitle>Informe seu CPF para acessar sua conta</mat-card-subtitle>
+    </mat-card-header>
 
-      <mat-card-content>
-        <div class="search-row" style="display: flex; gap: 16px; align-items: flex-start; padding-top: 10px;">
-          <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic" style="flex: 2;">
-            <mat-label>CPF</mat-label>
-            <input matInput [(ngModel)]="cpfBusca" maxlength="11" (keyup.enter)="buscarPorCPF()">
-            <mat-icon matSuffix>badge</mat-icon>
-          </mat-form-field>
+    <mat-card-content>
+      <div class="search-row" style="display: flex; gap: 16px; align-items: flex-start; padding-top: 10px;">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic" style="flex: 2;">
+          <mat-label>CPF</mat-label>
+          <input matInput [(ngModel)]="cpfBusca" maxlength="11" (keyup.enter)="buscarPorCPF()">
+          <mat-icon matSuffix>badge</mat-icon>
+        </mat-form-field>
 
-          <button mat-flat-button color="primary" style="height: 56px; flex: 1;" [disabled]="carregando()" (click)="buscarPorCPF()">
-            {{ carregando() ? 'BUSCANDO...' : 'ENTRAR' }}
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        <button mat-flat-button color="primary" style="height: 56px; flex: 1;" [disabled]="carregando()"
+          (click)="buscarPorCPF()">
+          {{ carregando() ? 'BUSCANDO...' : 'ENTRAR' }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
   }
 
   @else {
-    @let conta = contaAtiva()!;
+  @let conta = contaAtiva()!;
 
-    <div class="operation-panel animate-in">
+  <div class="operation-panel animate-in">
 
-      <mat-card class="info-card">
-        <div class="info-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="user-info">
-            <small style="text-transform: uppercase; letter-spacing: 1px;">Bem-vindo(a)</small>
-            <h3 style="margin: 0; font-size: 1.8rem;">{{ conta.titular }}</h3>
-            <p style="margin: 0; opacity: 0.8;">CPF: {{ conta.cpf }}</p>
-          </div>
-
-          <div class="balance-info" style="text-align: right;">
-            <small style="text-transform: uppercase; letter-spacing: 1px;">Saldo Disponível</small>
-            <h2 style="margin: 0; font-size: 2.8rem; font-weight: 700;">{{ conta.saldo | currency:'BRL' }}</h2>
-          </div>
-
-          <button mat-icon-button (click)="sair()" title="Sair" style="color: white; margin-left: 10px;">
-            <mat-icon>logout</mat-icon>
-          </button>
+    <mat-card class="info-card">
+      <div class="info-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="user-info">
+          <small style="text-transform: uppercase; letter-spacing: 1px;">Bem-vindo(a)</small>
+          <h3 style="margin: 0; font-size: 1.8rem;">{{ conta.titular }}</h3>
+          <p style="margin: 0; opacity: 0.8;">CPF: {{ conta.cpf }}</p>
         </div>
-      </mat-card>
 
-      <mat-card class="tabs-card" appearance="outlined">
-        <mat-tab-group mat-stretch-tabs="true">
+        <div class="balance-info" style="text-align: right;">
+          <small style="text-transform: uppercase; letter-spacing: 1px;">Saldo Disponível</small>
+          <h2 style="margin: 0; font-size: 2.8rem; font-weight: 700;">{{ conta.saldo | currency:'BRL' }}</h2>
+        </div>
 
-          <mat-tab label="DEPOSITAR">
-            <div class="tab-body">
-              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
-                <mat-label>Valor do Depósito</mat-label>
-                <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
-                <span matPrefix>R$&nbsp;</span>
-              </mat-form-field>
+        <button mat-icon-button (click)="sair()" title="Sair" style="color: white; margin-left: 10px;">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </mat-card>
 
-              <button mat-flat-button color="primary" class="full-width" style="height: 48px;"
-                      [disabled]="carregando() || valorOperacao() <= 0" (click)="executarOperacao('CREDITO')">
-                CONFIRMAR DEPÓSITO
-              </button>
-            </div>
-          </mat-tab>
+    <mat-card class="tabs-card" appearance="outlined">
+      <mat-tab-group mat-stretch-tabs="true">
 
-          <mat-tab label="SACAR">
-            <div class="tab-body">
-              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
-                <mat-label>Valor do Saque</mat-label>
-                <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
-                <span matPrefix>R$&nbsp;</span>
-              </mat-form-field>
+        <mat-tab label="DEPOSITAR">
+          <div class="tab-body">
+            <mat-form-field appearance="outline" floatLabel="always" class="full-width">
+              <mat-label>Valor do Depósito</mat-label>
+              <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
+              <span matPrefix>R$&nbsp;</span>
+            </mat-form-field>
 
-              <button mat-flat-button color="warn" class="full-width" style="height: 48px;"
-                      [disabled]="carregando() || valorOperacao() <= 0" (click)="executarOperacao('DEBITO')">
-                CONFIRMAR SAQUE
-              </button>
-            </div>
-          </mat-tab>
+            <button mat-flat-button color="primary" class="full-width" style="height: 48px;"
+              [disabled]="carregando() || valorOperacao() <= 0" (click)="executarOperacao('CREDITO')">
+              CONFIRMAR DEPÓSITO
+            </button>
+          </div>
+        </mat-tab>
 
-          <mat-tab label="TRANSFERIR">
-            <div class="tab-body">
-              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
-                <mat-label>CPF do Favorecido</mat-label>
-                <input matInput [(ngModel)]="cpfDestinoBusca" maxlength="11" (input)="buscarFavorecidoPorCPF()" placeholder="000.000.000-00">
+        <mat-tab label="SACAR">
+          <div class="tab-body">
+            <mat-form-field appearance="outline" floatLabel="always" class="full-width">
+              <mat-label>Valor do Saque</mat-label>
+              <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
+              <span matPrefix>R$&nbsp;</span>
+            </mat-form-field>
 
-                @if (contaDestinoEncontrada(); as fav) {
-                  <mat-hint style="color: #2e7d32; font-weight: 500; display: flex; align-items: center; gap: 4px;">
-                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">verified</mat-icon>
-                    Favorecido: {{ fav.titular }}
-                  </mat-hint>
-                }
-              </mat-form-field>
+            <button mat-flat-button color="warn" class="full-width" style="height: 48px;"
+              [disabled]="carregando() || valorOperacao() <= 0" (click)="executarOperacao('DEBITO')">
+              CONFIRMAR SAQUE
+            </button>
+          </div>
+        </mat-tab>
 
-              <mat-form-field appearance="outline" floatLabel="always" class="full-width">
-                <mat-label>Valor da Transferência</mat-label>
-                <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
-                <span matPrefix>R$&nbsp;</span>
-              </mat-form-field>
+        <mat-tab label="TRANSFERIR">
+          <div class="tab-body">
+            <mat-form-field appearance="outline" floatLabel="always" class="full-width">
+              <mat-label>CPF do Favorecido</mat-label>
+              <input matInput [(ngModel)]="cpfDestinoBusca" maxlength="11" (input)="buscarFavorecidoPorCPF()"
+                placeholder="000.000.000-00">
 
-              <button mat-flat-button color="accent" class="full-width" style="height: 48px;"
-                      [disabled]="carregando() || !contaDestinoEncontrada() || valorOperacao() <= 0"
-                      (click)="executarOperacao('TRANSFERENCIA')">
-                ENVIAR TRANSFERÊNCIA
-              </button>
-            </div>
-          </mat-tab>
-
-          <mat-tab label="EXTRATO">
-            <div class="tab-body" style="padding: 24px;">
-
-              @if (extrato().length === 0 && !carregandoExtrato()) {
-                <div style="text-align: center; padding: 30px;">
-                  <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #ddd; margin-bottom: 12px;">receipt_long</mat-icon>
-                  <p style="color: #888; margin-bottom: 20px;">Deseja visualizar seu histórico de transações?</p>
-                  <button mat-stroked-button color="primary" (click)="emitirExtrato()">
-                    <mat-icon>print</mat-icon> EMITIR EXTRATO AGORA
-                  </button>
-                </div>
+              @if (contaDestinoEncontrada(); as fav) {
+              <mat-hint style="color: #2e7d32; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">verified</mat-icon>
+                Favorecido: {{ fav.titular }}
+              </mat-hint>
               }
-
-              @if (carregandoExtrato()) {
-                <div style="text-align: center; padding: 40px;">
-                  <mat-spinner diameter="40" style="margin: 0 auto;"></mat-spinner>
-                  <p style="margin-top: 15px; color: #666;">Gerando documento...</p>
-                </div>
+              @else if (mensagemErroFavorecido()) {
+              <mat-hint style="color: #d32f2f; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">error_outline</mat-icon>
+                {{ mensagemErroFavorecido() }}
+              </mat-hint>
               }
+            </mat-form-field>
 
-         @if (extrato().length > 0 && !carregandoExtrato()) {
+            <mat-form-field appearance="outline" floatLabel="always" class="full-width">
+              <mat-label>Valor da Transferência</mat-label>
+              <input matInput appCurrencyMask type="text" [(ngModel)]="valorOperacao">
+              <span matPrefix>R$&nbsp;</span>
+            </mat-form-field>
+            <button mat-flat-button color="accent" class="full-width" style="height: 48px;"
+              [disabled]="carregando() || (cpfDestinoBusca().length < 11 && !contaDestinoEncontrada()) || valorOperacao() <= 0"
+              (click)="executarOperacao('TRANSFERENCIA')">
 
-  <div class="extrato-container" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+              @if (carregando()) {
+              <mat-spinner diameter="24" style="margin: 0 auto;"></mat-spinner>
+              } @else {
+              ENVIAR TRANSFERÊNCIA
+              }
+            </button>
+          </div>
+        </mat-tab>
 
-    <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 2px dashed #ccc;">
-      <span style="color: #666;">Saldo Inicial do Período:</span>
-      <strong style="color: #1a237e;">{{ saldoInicialExtrato() | currency:'BRL' }}</strong>
-    </div>
+        <mat-tab label="EXTRATO">
+          <div class="tab-body" style="padding: 24px;">
 
- <table mat-table [dataSource]="extrato()" style="width: 100%;">
+            @if (extrato().length === 0 && !carregandoExtrato()) {
+            <div style="text-align: center; padding: 30px;">
+              <mat-icon
+                style="font-size: 48px; width: 48px; height: 48px; color: #ddd; margin-bottom: 12px;">receipt_long</mat-icon>
+              <p style="color: #888; margin-bottom: 20px;">Deseja visualizar seu histórico de transações?</p>
+              <button mat-stroked-button color="primary" (click)="emitirExtrato()">
+                <mat-icon>print</mat-icon> EMITIR EXTRATO AGORA
+              </button>
+            </div>
+            }
 
-  <ng-container matColumnDef="data">
-    <th mat-header-cell *matHeaderCellDef> Data </th>
-    <td mat-cell *matCellDef="let t"> {{ t.dataHora | date:'dd/MM/yyyy HH:mm' }} </td>
-  </ng-container>
+            @if (carregandoExtrato()) {
+            <div style="text-align: center; padding: 40px;">
+              <mat-spinner diameter="40" style="margin: 0 auto;"></mat-spinner>
+              <p style="margin-top: 15px; color: #666;">Gerando documento...</p>
+            </div>
+            }
 
- <ng-container matColumnDef="tipo">
-  <th mat-header-cell *matHeaderCellDef> Operação </th>
-  <td mat-cell *matCellDef="let t">
-    <div style="display: flex; flex-direction: column;">
-      <strong>{{ t.tipo }}</strong>
-      @if (t.contraparteNome) {
-        <small style="color: #666;">
-          {{ t.tipo === 'TRANSFERENCIA_RECEBIDA' ? 'De: ' : 'Para: ' }} {{ t.contraparteNome }}
-        </small>
-      }
-    </div>
-  </td>
-</ng-container>
-<ng-container matColumnDef="valor">
-  <th mat-header-cell *matHeaderCellDef style="text-align: right; padding-right: 24px;"> Valor </th>
+            @if (extrato().length > 0 && !carregandoExtrato()) {
 
-  <td mat-cell *matCellDef="let t"
-      [style.color]="t.tipo === 'DEBITO' ? '#c62828' : '#2e7d32'"
-      style="text-align: right; font-weight: 600; padding-right: 24px;">
+            <div class="extrato-container" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
 
-      {{ t.tipo === 'DEBITO' ? '-' : '' }} {{ t.valor | currency:'BRL' }}
-  </td>
-</ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="['data', 'tipo', 'valor']; sticky: true"></tr>
-  <tr mat-row *matRowDef="let row; columns: ['data', 'tipo', 'valor'];"></tr>
+              <table mat-table [dataSource]="extrato()" style="width: 100%;">
 
-</table>
+                <ng-container matColumnDef="data">
+                  <th mat-header-cell *matHeaderCellDef> Data </th>
+                  <td mat-cell *matCellDef="let t"> {{ t.dataHora | date:'dd/MM/yyyy HH:mm' }} </td>
+                </ng-container>
 
-    <div style="display: flex; justify-content: space-between; padding: 10px; border-top: 2px dashed #ccc; margin-top: 10px;">
-      <span style="font-weight: bold;">Saldo Final:</span>
-      <strong [style.color]="saldoFinalExtrato() >= 0 ? '#2e7d32' : '#c62828'" style="font-size: 1.1rem;">
-        {{ saldoFinalExtrato() | currency:'BRL' }}
-      </strong>
-    </div>
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef> Operação </th>
+                  <td mat-cell *matCellDef="let t">
+                    <div style="display: flex; flex-direction: column;">
+                      <strong>{{ t.tipo }}</strong>
+                      @if (t.contraparteNome) {
+                      <small style="color: #666;">
+                        {{ t.tipo === 'TRANSFERENCIA_RECEBIDA' ? 'De: ' : 'Para: ' }} {{ t.contraparteNome }}
+                      </small>
+                      }
+                    </div>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef style="text-align: right; padding-right: 24px;"> Valor </th>
 
+                  <td mat-cell *matCellDef="let t" [style.color]="t.tipo === 'DEBITO' ? '#c62828' : '#2e7d32'"
+                    style="text-align: right; font-weight: 600; padding-right: 24px;">
+
+                    {{ t.tipo === 'DEBITO' ? '-' : '' }} {{ t.valor | currency:'BRL' }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['data', 'tipo', 'valor']; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['data', 'tipo', 'valor'];"></tr>
+
+              </table>
+
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px; border-top: 2px dashed #ccc; margin-top: 10px;">
+                <span style="font-weight: bold;">Saldo Final:</span>
+                <strong [style.color]="saldoFinalExtrato() >= 0 ? '#2e7d32' : '#c62828'" style="font-size: 1.1rem;">
+                  {{ saldoFinalExtrato() | currency:'BRL' }}
+                </strong>
+              </div>
+
+            </div>
+            <mat-paginator [length]="totalElementos()" [pageSize]="itensPorPagina()" [pageIndex]="paginaAtual()"
+              [pageSizeOptions]="[5, 10, 20]" (page)="mudarPagina($event)">
+            </mat-paginator>
+            }
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </mat-card>
   </div>
-<mat-paginator
-  [length]="totalElementos()"
-  [pageSize]="itensPorPagina()"
-  [pageIndex]="paginaAtual()"
-  [pageSizeOptions]="[5, 10, 20]"
-  (page)="mudarPagina($event)">
-</mat-paginator>
-}
-            </div>
-          </mat-tab>
-
-        </mat-tab-group>
-      </mat-card>
-    </div>
   }
 </div>
