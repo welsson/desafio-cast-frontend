@@ -1,17 +1,5 @@
 {
-  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/cast/(.*\\.(js|css|png|jpg|svg|ico|json))$",
-      "destination": "/$1"
-    },
-    {
-      "source": "/cast/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/cast",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
