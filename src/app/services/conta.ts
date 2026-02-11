@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ContaDTO, PageResponseDTO, TransacaoDTO } from '../models/conta.model';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class ContaService {
   private readonly http = inject(HttpClient); // Usando inject() padrão Angular 19
-  private readonly API = 'http://localhost:8520/v1/contas';
+  private readonly API = `${environment.apiUrl}/v1/contas`;
 
   // --- ADMIN ---
 
