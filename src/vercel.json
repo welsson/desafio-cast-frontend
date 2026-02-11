@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/cast/(.*)",
+      "destination": "/cast/index.html"
+    },
+    {
+      "source": "/cast",
+      "destination": "/cast/index.html"
+    }
+  ]
+}
